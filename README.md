@@ -13,7 +13,7 @@ R2Plus1D-PyTorch has the following requirements
 
 ### About this repository
 
-This repository consists of four python files, that each do a distinct task.
+This repository consists of four python files:
 
 * `module.py` - Contains an implementation of the factored, R2Plus1D convolution the entire implementation is based around. It is designed to be a replacement for nn.Conv3D in the appropriate scenario
 * `network.py` - Uses `module.py` to build up the residual network described in the paper
