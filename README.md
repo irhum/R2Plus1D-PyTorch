@@ -22,7 +22,7 @@ This repository consists of four python files:
 
 ### Training on Kinetics-600
 
-This repository does not include a crawler or downloader for the Kinetics-600 dataset, however, one can be found [here](https://github.com/activitynet/ActivityNet/tree/master/Crawler/Kinetics). It is strongly recommended to downsample the videos prior to training (and not on the fly), using a tool such as ffmpeg. If using the crawler, this can be done by adding `"-vf", "scale=171:128"` to the ffmpeg command list in the download clip function.
+This repository does not include a crawler or downloader for the Kinetics-600 dataset, however, one can be found [here](https://github.com/activitynet/ActivityNet/tree/master/Crawler/Kinetics). It is strongly recommended to downsample the videos prior to training (and not on the fly), using a tool such as ffmpeg. If using the crawler, this can be done by adding `"-vf", "scale=172:128"` to the ffmpeg command list in the download clip function.
 
 ### Training in general
 
