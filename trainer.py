@@ -7,7 +7,7 @@ from torch import nn, optim
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from dataset import VideoDataset
+from dataset import VideoDataset, VideoDataset1M
 from network import R2Plus1DClassifier
 
 # Use GPU if available else revert to CPU
@@ -114,6 +114,9 @@ criterion = nn.CrossEntropyLoss()  # standard crossentropy loss for classificati
 
 # prepare the dataloaders into a dict
 train_dataloader = DataLoader(VideoDataset('/home/irhum/data/video'), batch_size=32, shuffle=True, num_workers=4)
+# IF training on Kinetics-600 and require exactly a million samples each epoch, 
+# import VideoDataset1M and uncomment the following
+# train_dataloader = DataLoader(VideoDataset1M('/home/irhum/data/video'), batch_size=32, num_workers=4)
 val_dataloader = DataLoader(VideoDataset('/home/irhum/data/video', mode='val'), batch_size=32, num_workers=4)
 dataloaders = {'train': train_dataloader, 'val': val_dataloader}
 
