@@ -14,21 +14,37 @@ from network import R2Plus1DClassifier
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print("Device being used:", device)
 
-def train_model(model, dataloaders, criterion, optimizer, scheduler, num_epochs=45, save=True, path="model_data.pth.tar"):
-    r"""Trains the model for a fixed number of epochs, using the specified Dataloaders, 
-    criterion, optimizer and scheduler. Features saving and restoration capabilities as well. 
+def train_model(num_classes, directory, layer_sizes=[2, 2, 2, 2], num_epochs=45, save=True, path="model_data.pth.tar"):
+    """Initalizes and the model for a fixed number of epochs, using dataloaders from the specified directory, 
+    selected optimizer, scheduler, criterion, defualt otherwise. Features saving and restoration capabilities as well. 
     Adapted from the PyTorch tutorial found here: https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html
-    
-    Args:
-        model (Module): The model which is to be trained. Training is an in place operation.
-        dataloaders (dict): Dictionary with the dataloaders for each split assigned by key-value pairs
-        criterion (callable): Loss function, takes in predictions and label_array, and outputs the loss
-        optimizer (Optimizer): Optimizer for the model
-        scheduler (_LR_Scheduler): Scheduler for the optimizer
-        num_epochs (int, optional): Number of epochs the model is to be trained for in total, including epochs being restored from save files. Defaults to 45.
-        save (bool, optional): If True, the model is to be saved. Defaults to True. 
-        path (str, optional): The path the model is to be saved to (if being saved), and restored from. Defaults to "model_data.pth.tar". 
+
+        Args:
+            num_classes (int): Number of classes in the data
+            directory ([type]): Directory where the data is to be loaded from
+            layer_sizes (list, optional): Number of blocks in each layer. Defaults to [2, 2, 2, 2], equivalent to ResNet18.
+            num_epochs (int, optional): Number of epochs to train for. Defaults to 45. 
+            save (bool, optional): If true, the model will be saved to path. Defaults to True. 
+            path (str, optional): The directory to load a model checkpoint from, and if save == True, save to. Defaults to "model_data.pth.tar".
     """
+
+
+    # initalize the ResNet 18 version of this model
+    model = R2Plus1DClassifier(num_classes=num_classes, layer_sizes=layer_sizes).to(device)
+
+    criterion = nn.CrossEntropyLoss() # standard crossentropy loss for classification
+    optimizer = optim.SGD(model.parameters(), lr=0.01)  # hyperparameters as given in paper sec 4.1
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)  # the scheduler divides the lr by 10 every 10 epochs
+
+    # prepare the dataloaders into a dict
+    train_dataloader = DataLoader(VideoDataset(directory), batch_size=10, shuffle=True, num_workers=4)
+    # IF training on Kinetics-600 and require exactly a million samples each epoch, 
+    # import VideoDataset1M and uncomment the following
+    # train_dataloader = DataLoader(VideoDataset1M(directory), batch_size=32, num_workers=4)
+    val_dataloader = DataLoader(VideoDataset(directory, mode='val'), batch_size=14, num_workers=4)
+    dataloaders = {'train': train_dataloader, 'val': val_dataloader}
+
+    dataset_sizes = {x: len(dataloaders[x].dataset) for x in ['train', 'val']}
 
     # saves the time the process was started, to compute total time at the end
     start = time.time()
@@ -87,11 +103,10 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, num_epochs=
                         optimizer.step()   
 
                 running_loss += loss.item() * inputs.size(0)
-                running_corrects += torch.sum(preds == labels.data)         
+                running_corrects += torch.sum(preds == labels.data)
 
-            # compute the average loss and accuracy for this epoch, and print
-            epoch_loss = running_loss / len(dataloaders[phase])
-            epoch_acc = running_corrects.double() / len(dataloaders[phase])
+            epoch_loss = running_loss / dataset_sizes[phase]
+            epoch_acc = running_corrects.double() / dataset_sizes[phase]
 
             print(f"{phase} Loss: {epoch_loss} Acc: {epoch_acc}")
 
@@ -108,21 +123,4 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, num_epochs=
     time_elapsed = time.time() - start    
     print(f"Training complete in {time_elapsed//3600}h {(time_elapsed%3600)//60}m {time_elapsed %60}s")
 
-# initalize the ResNet 18 version of this model
-model = R2Plus1DClassifier(num_classes=2, layer_sizes=[2, 2, 2, 2]).to(device)
-criterion = nn.CrossEntropyLoss()  # standard crossentropy loss for classification
-
-# prepare the dataloaders into a dict
-train_dataloader = DataLoader(VideoDataset('/home/irhum/data/video'), batch_size=32, shuffle=True, num_workers=4)
-# IF training on Kinetics-600 and require exactly a million samples each epoch, 
-# import VideoDataset1M and uncomment the following
-# train_dataloader = DataLoader(VideoDataset1M('/home/irhum/data/video'), batch_size=32, num_workers=4)
-val_dataloader = DataLoader(VideoDataset('/home/irhum/data/video', mode='val'), batch_size=32, num_workers=4)
-dataloaders = {'train': train_dataloader, 'val': val_dataloader}
-
-# hyperparameters as given in paper sec 4.1
-optimizer = optim.SGD(model.parameters(), lr=0.01)
-# the scheduler divides the lr by 10 every 10 epochs
-scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
-
-train_model(model, dataloaders, criterion, optimizer, scheduler, num_epochs=45)
+train_model(2, '/home/irhum/data/video')
