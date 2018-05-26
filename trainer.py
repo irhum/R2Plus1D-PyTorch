@@ -21,7 +21,7 @@ def train_model(num_classes, directory, layer_sizes=[2, 2, 2, 2], num_epochs=45,
 
         Args:
             num_classes (int): Number of classes in the data
-            directory ([type]): Directory where the data is to be loaded from
+            directory (str): Directory where the data is to be loaded from
             layer_sizes (list, optional): Number of blocks in each layer. Defaults to [2, 2, 2, 2], equivalent to ResNet18.
             num_epochs (int, optional): Number of epochs to train for. Defaults to 45. 
             save (bool, optional): If true, the model will be saved to path. Defaults to True. 
@@ -122,5 +122,3 @@ def train_model(num_classes, directory, layer_sizes=[2, 2, 2, 2], num_epochs=45,
     # print the total time needed, HH:MM:SS format
     time_elapsed = time.time() - start    
     print(f"Training complete in {time_elapsed//3600}h {(time_elapsed%3600)//60}m {time_elapsed %60}s")
-
-train_model(2, '/home/irhum/data/video')
