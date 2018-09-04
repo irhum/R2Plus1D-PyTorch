@@ -26,6 +26,6 @@ This repository does not include a crawler or downloader for the Kinetics-400/60
 
 ### Training in general
 
-This repository is designed for the ResNet to be trained on any dataset of videos in general, using the VideoDataloader from dataloader.py . It expects the videos to be arranged in a directory -> [train/val] folders -> [class_label] folders (one for each class) -> videos (the files themselves). 
+This repository is designed for the ResNet to be trained on any dataset of videos in general, using the VideoDataloader class from dataset.py . It expects the videos to be arranged in a directory -> [train/val] folders -> [class_label] folders (one for each class) -> videos (the files themselves). 
 
 Forks and fixes of this repo are highly welcome!
