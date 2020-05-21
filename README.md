@@ -3,7 +3,7 @@ PyTorch implementation of the R2Plus1D convolution based ResNet architecture des
 
 Link to original: [paper](https://arxiv.org/abs/1711.11248) and [code](https://github.com/facebookresearch/R2Plus1D)
 
-NOTE: This repository is no longer actively maintained.
+***NOTE: This repository is no longer actively maintained, although forks and other work that extends on top of this remain welcome***
 
 ## Requirements 
 
